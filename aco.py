@@ -1,15 +1,16 @@
 import random
 import matplotlib.pyplot as plt
+import numpy
 
 import cProfile
 
 import time
 
-k = 20 # Number of Weights
-b = 7 # Bin Number
-p = 10 # Ant Number
+k = 50 # Number of Weights
+b = 10 # Bin Number
+p = 100 # Ant Number
 e = 0.9 # Evaporation Rate
-t = 10 # Max Number of Iterations
+t = 1000 # Max Number of Iterations
 
 class Weight:
     def __init__(self, value):
@@ -95,7 +96,7 @@ class Ant:
     for i in range(k):
         bins[path[i][1]] += weights[i].getValue()
     return bins """
-
+    
 
 def main():
     weights = []
@@ -126,26 +127,31 @@ def main():
     for i in range(t):
 
         genFit = []
-        
-
         for ant in ants:
 
             ant.generatePath(weights)
 
             x = ant.setFitness()
-            genFit.append(x)
+            genFit.append([x, ant])
             if x < minFit:
                 minFit = x
                 minAnt = ant
                 print(i)
                 print(minFit)
                 #print(findBinsOfPath(minPath,weights))
-        #for ant in ants:
-            #ant.updatePheromone(weights)
-        minAnt.updatePheromone(weights)
+
+        fitnesses.append(genFit.copy())
+
+        genFit = numpy.array(genFit)
+        genFit = genFit[genFit[:,0].argsort()]
+
+        for i in range(int(p * 0.3)):
+            genFit[i,1].updatePheromone(weights)
+
+
         for weight in weights:
             weight.evaporate()
-        fitnesses.append(genFit)
+        
         if minFit == 0:
             break
 
@@ -154,18 +160,14 @@ def main():
 
     minfit = float("inf")
     for x in fitnesses:
-        if min(x) < minfit:
-            minfit = min(x)
-        out.append([minfit,max(x),(sum(x)/p)])
+        x = numpy.array(x)
+        if min(x[:,0]) < minfit:
+            minfit = min(x[:,0])
+        out.append([minfit,max(x[:,0]),(sum(x[:,0])/p), min(x[:,0])])
 
     print("Out")
 
     plt.plot(out)
     plt.show()
-
-    for i in weights:
-        print("\n\n\n\n")
-        for j in i.bins:
-            print(j.pheromones)
 
 main()
