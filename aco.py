@@ -5,11 +5,11 @@ import cProfile
 
 import time
 
-k = 200 # Number of Weights
-b = 10 # Bin Number
-p = 100 # Ant Number
-e = 0.4 # Evaporation Rate
-t = 100 # Max Number of Iterations
+k = 20 # Number of Weights
+b = 7 # Bin Number
+p = 10 # Ant Number
+e = 0.9 # Evaporation Rate
+t = 10 # Max Number of Iterations
 
 class Weight:
     def __init__(self, value):
@@ -61,7 +61,7 @@ class Bin:
 
 class Ant:
     def __init__(self):
-        self.path = [(0,0)] * k
+        self.path = [0] * k
         self.binValue = [0] * b
         self.fitness = float("inf")
 
@@ -83,14 +83,10 @@ class Ant:
 
     def updatePheromone(self, weights):
         x = self.setFitness()
-        weights[k-1].increase(0,self.path[0], 10000 / x**2)
-        #weights[k-1].increase(0,self.path[0], 100 / x)
+        #weights[k-1].increase(0,self.path[0], 10000 / x**2)
+        weights[k-1].increase(0,self.path[0], 200000 / x)
         for i in range(k-1):            
-            if x == 0:
-                weights[i].increase(self.path[i+1], self.path[i], float("inf"))
-            else:
-                weights[i].increase(self.path[i+1], self.path[i], 10000 / x**2)
-                #weights[i].increase(self.path[i], 100 / x)
+            weights[i].increase(self.path[i+1], self.path[i], 200000 / x)
         
 
 
@@ -121,27 +117,32 @@ def main():
         ants.append(x)
 
     minFit = float("inf")
+
     #minPath = []
 
     fitnesses = []
+    minAnt = ants[0]
 
     for i in range(t):
+
         genFit = []
+        
 
         for ant in ants:
 
             ant.generatePath(weights)
 
-            x = ant.fitness
+            x = ant.setFitness()
             genFit.append(x)
             if x < minFit:
                 minFit = x
-                minPath = ant.path.copy()
+                minAnt = ant
                 print(i)
                 print(minFit)
                 #print(findBinsOfPath(minPath,weights))
-        for ant in ants:
-            ant.updatePheromone(weights)
+        #for ant in ants:
+            #ant.updatePheromone(weights)
+        minAnt.updatePheromone(weights)
         for weight in weights:
             weight.evaporate()
         fitnesses.append(genFit)
@@ -161,5 +162,10 @@ def main():
 
     plt.plot(out)
     plt.show()
+
+    for i in weights:
+        print("\n\n\n\n")
+        for j in i.bins:
+            print(j.pheromones)
 
 main()
