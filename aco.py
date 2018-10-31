@@ -11,6 +11,7 @@ b = 10 # Bin Number
 p = 100 # Ant Number
 e = 0.9 # Evaporation Rate
 t = 1000 # Max Number of Iterations
+r = 0.3 # Percentage of Ants that update thier pheromones
 
 class Weight:
     def __init__(self, value):
@@ -99,6 +100,8 @@ class Ant:
     
 
 def main():
+
+    ###DECLRAING THE WEIGHTS
     weights = []
 
     #BPP1
@@ -111,31 +114,32 @@ def main():
         x  = Weight((random.randint(1,201) * i)/2)
         weights.append(x)
 
+    
+    ###CREATING p NUMBER OF ANTS
     ants = []
-
     for i in range(p):
         x = Ant()
         ants.append(x)
 
+    ###SETTING MINIMUM FITNESS FOUND TO INFINITE
     minFit = float("inf")
-
-    #minPath = []
-
+    
+    ###CREATING LIST FOR ALL FITNESSES (FOR GRAPHING LATER)
     fitnesses = []
-    minAnt = ants[0]
+
 
     for i in range(t):
 
         genFit = []
-        for ant in ants:
 
+        for ant in ants:
             ant.generatePath(weights)
 
             x = ant.setFitness()
             genFit.append([x, ant])
+
             if x < minFit:
                 minFit = x
-                minAnt = ant
                 print(i)
                 print(minFit)
                 #print(findBinsOfPath(minPath,weights))
@@ -145,7 +149,7 @@ def main():
         genFit = numpy.array(genFit)
         genFit = genFit[genFit[:,0].argsort()]
 
-        for i in range(int(p * 0.3)):
+        for i in range(int(p * r)):
             genFit[i,1].updatePheromone(weights)
 
 
@@ -170,4 +174,73 @@ def main():
     plt.plot(out)
     plt.show()
 
-main()
+
+def test():
+    ###DECLRAING THE WEIGHTS
+    weights = []
+
+    for i in range(100):
+        x  = Weight(i)
+        weights.append(x)
+
+    
+    ###CREATING p NUMBER OF ANTS
+    ants = []
+    for i in range(p):
+        x = Ant()
+        ants.append(x)
+
+    ###SETTING MINIMUM FITNESS FOUND TO INFINITE
+    minFit = float("inf")
+    
+    ###CREATING LIST FOR ALL FITNESSES (FOR GRAPHING LATER)
+    fitnesses = []
+
+
+    for i in range(t):
+
+        genFit = []
+
+        for ant in ants:
+            ant.generatePath(weights)
+
+            x = ant.setFitness()
+            genFit.append([x, ant])
+
+            if x < minFit:
+                minFit = x
+                print(i)
+                print(minFit)
+                #print(findBinsOfPath(minPath,weights))
+
+        fitnesses.append(genFit.copy())
+
+        genFit = numpy.array(genFit)
+        genFit = genFit[genFit[:,0].argsort()]
+
+        for i in range(int(p * r)):
+            genFit[i,1].updatePheromone(weights)
+
+
+        for weight in weights:
+            weight.evaporate()
+        
+        if minFit == 0:
+            break
+
+
+    out = []
+
+    minfit = float("inf")
+    for x in fitnesses:
+        x = numpy.array(x)
+        if min(x[:,0]) < minfit:
+            minfit = min(x[:,0])
+        out.append([minfit,max(x[:,0]),(sum(x[:,0])/p), min(x[:,0])])
+
+    print("Out")
+
+    plt.plot(out)
+    plt.show()
+
+test()
