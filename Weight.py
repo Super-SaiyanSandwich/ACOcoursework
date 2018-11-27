@@ -11,7 +11,16 @@ class Weight:
     def getValue(self):
         return self.value
 
-    
+    def getBinPheromone(self, bini):
+        return self.bins[bini].getPheromones()
+
+    def getPheromones(self):
+        out = []
+        for bini in self.bins:
+            out.append(bini.getPheromones())
+        return out
+
+
     def chooseRandBin(self, path):
         return self.bins[path].chooseRandBin()
 

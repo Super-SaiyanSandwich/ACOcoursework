@@ -3,10 +3,14 @@ import random
 class Bin:
     def __init__(self, binNum, evapRate, totalBins):
         self.totalBins = totalBins
-        self.pheromones = [random.uniform(0,1)] * self.totalBins
+        self.pheromones = [0] * self.totalBins
+        for i in range(self.totalBins):
+            self.pheromones[i] = random.uniform(0,1)
         self.binNum = binNum
         self.evapRate = evapRate
         
+    def getPheromones(self):
+        return self.pheromones
 
     def chooseRandBin(self):
         x = sum(self.pheromones)
@@ -19,8 +23,8 @@ class Bin:
         return self.totalBins - 1
 
     def evaporate(self):
-        for phero in self.pheromones:
-            phero *= self.evapRate
+        for i in range(self.totalBins):
+            self.pheromones[i] *= self.evapRate
 
     def increase(self, path, value):
         self.pheromones[path] += value

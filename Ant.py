@@ -4,7 +4,7 @@ class Ant:
         self.numberWeights = numberWeights
         self.totalBins = totalBins
         self.path = [0] * numberWeights
-        self.binValue = [0] * totalBins
+        self.binValue = [0]
         self.fitness = float("inf")
 
     def generatePath(self, weights):
@@ -28,4 +28,4 @@ class Ant:
         #weights[k-1].increase(0,self.path[0], 10000 / x**2)
         weights[self.numberWeights - 1].increase(0,self.path[0], 100 / self.fitness)
         for i in range(self.numberWeights - 1):            
-            weights[i].increase(self.path[i+1], self.path[i], 100 / self.fitness)
+            weights[i].increase(self.path[i], self.path[i+1], 100 / self.fitness)

@@ -5,11 +5,11 @@ import numpy
 import Weight
 import Ant
 
-k = 50 # Number of Weights
+k = 200 # Number of Weights
 b = 10 # Bin Number
-p = 100 # Ant Number
-e = 0.3 # Evaporation Rate
-t = 100 # Max Number of Iteration        
+p = 10 # Ant Number
+e = 0.9 # Evaporation Rate
+t = 1000 # Max Number of Iteration        
 
 
 """ def findBinsOfPath(path, weights):
@@ -22,7 +22,7 @@ t = 100 # Max Number of Iteration
 def main():
 
     ###DECLRAING THE WEIGHTS
-    weights = []
+    weights = []    
 
     #BPP1
     """ for i in range(k):
@@ -33,6 +33,7 @@ def main():
     for i in range(k):
         x  = Weight.Weight(((random.randint(1,201) * i)/2), b, e)
         weights.append(x)
+
 
     
     ###CREATING p NUMBER OF ANTS
@@ -69,8 +70,8 @@ def main():
         genFit = numpy.array(genFit)
         genFit = genFit[genFit[:,0].argsort()]
 
-        for i in range(p):
-            genFit[i,1].updatePheromone(weights)
+        for ant in ants:
+            ant.updatePheromone(weights)
 
 
         for weight in weights:
@@ -78,7 +79,6 @@ def main():
         
         if minFit == 0:
             break
-
 
     out = []
 
@@ -89,7 +89,6 @@ def main():
             minfit = min(x[:,0])
         out.append([minfit,max(x[:,0]),(sum(x[:,0])/p), min(x[:,0])])
 
-    print("Out")
 
     plt.plot(out)
     plt.show()
