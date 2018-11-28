@@ -16,8 +16,9 @@ t = 1000 # Max Number of Iteration
     bins = [0]*b
     for i in range(k):
         bins[path[i][1]] += weights[i].getValue()
-    return bins """
-    
+    return bins """   
+
+
 
 def main():
 
@@ -66,9 +67,6 @@ def main():
                 #print(findBinsOfPath(minPath,weights))
 
         fitnesses.append(genFit.copy())
-
-        genFit = numpy.array(genFit)
-        genFit = genFit[genFit[:,0].argsort()]
 
         for ant in ants:
             ant.updatePheromone(weights)
