@@ -33,3 +33,7 @@ class Weight:
     
     def increase(self, bini, path, value):
         self.bins[bini].increase(path, value)
+
+def evaporateAll(weights):
+    for weight in weights:
+        weight.evaporate()  

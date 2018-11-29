@@ -29,3 +29,28 @@ class Ant:
         weights[self.numberWeights - 1].increase(0,self.path[0], 100 / self.fitness)
         for i in range(self.numberWeights - 1):            
             weights[i].increase(self.path[i], self.path[i+1], 100 / self.fitness)
+
+def generateAnts(antNumber,weightNumber,binNumber):
+    ants = []
+    for i in range(antNumber):
+        x = Ant(weightNumber,binNumber)
+        ants.append(x)
+    return ants
+
+def updateAnts(ants, weights):
+    for ant in ants:
+        ant.updatePheromone(weights)
+    return len(ants)
+
+def generateGeneration(ants, weights, minFit):
+    genFit = []
+
+    for ant in ants:
+        ant.generatePath(weights)
+
+        x = ant.setFitness()
+        genFit.append(x)
+
+        if x < minFit:
+            minFit = x
+    return genFit, minFit
