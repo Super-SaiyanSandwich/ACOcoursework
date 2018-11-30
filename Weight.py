@@ -1,5 +1,6 @@
 import bin
 
+###USED FOR THE GENERATION OF THE CONSTRUCTION GRAPH
 class Weight:
     def __init__(self, value, totalBins, evapRate):
         self.value = value
@@ -11,19 +12,23 @@ class Weight:
     def getValue(self):
         return self.value
 
+    ###RETURN SPECIFIC BIN'S PHEROMONES
     def getBinPheromone(self, bini):
         return self.bins[bini].getPheromones()
 
+    ###RETURN ALL BINS' PHEROMONES
     def getPheromones(self):
         out = []
         for bini in self.bins:
             out.append(bini.getPheromones())
         return out
 
-
+    ###CHOOSE A RANDOM BIN TO GO TO BASED ON THE PREVIOUS SELECTED
     def chooseRandBin(self, path):
         return self.bins[path].chooseRandBin()
 
+    ###RATHER THAN HAVE A UNIQUE OBJECT FOR THE INTIAL STEP OF THE CONSTRUCTION GRAPH
+    ###USES THE END WEIGHT THAT LEADS NOWHERE AS A REPLACEMENT OBJECT. SAVES SPACE
     def chooseInitialBin(self):
         return self.bins[0].chooseRandBin()
 

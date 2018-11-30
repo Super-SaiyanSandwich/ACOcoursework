@@ -6,14 +6,7 @@ import Weight
 import Ant
       
 
-BPP = ""
-
-""" def findBinsOfPath(path, weights):
-    bins = [0]*b
-    for i in range(k):
-        bins[path[i][1]] += weights[i].getValue()
-    return bins """   
-
+###GRAPHS OUT A AVERAGE RUN FROM A REPEAT NUMBER OF RUNS
 def graphRepeatRun(fitnesses, numberOfAnts, evaporationRate, BPPName, trials):
 
     out = []
@@ -24,13 +17,17 @@ def graphRepeatRun(fitnesses, numberOfAnts, evaporationRate, BPPName, trials):
             minfit = min(x)
         out.append([minfit,max(x),(sum(x)/ numberOfAnts), min(x)])
 
-    
     plt.plot(out)
+    plt.ylabel("Fitness")
+    plt.xlabel("Generations")
     plt.title("Results of " + BPPName + " with " + str(numberOfAnts) + " ants and an evaporation rate of " + str(evaporationRate) + ".\nAveraged over " + str(trials) +" trials")
-    plt.show()
+    
+    plt.legend(["Minimum Average Fitness\nFound Thus Far","Largest Average Fitness", "Average Fitness", "Smallest Average Fitness"], fontsize = 'x-small',bbox_to_anchor=(1.05, 1), loc='upper left', borderaxespad=0.)
 
+    plt.savefig(BPPName + str(numberOfAnts) + str(evaporationRate) + str(trials) + ".png",bbox_inches="tight")
+
+### GRAPHS OUT THE RESULTS FROM A SINGLE RUN
 def graphSingleRun(fitnesses, numberOfAnts, evaporationRate, BPPName):
-
     out = []
     minfit = float("inf")
     for x in fitnesses:
@@ -39,12 +36,13 @@ def graphSingleRun(fitnesses, numberOfAnts, evaporationRate, BPPName):
             minfit = min(x[:,0])
         out.append([minfit,max(x[:,0]),(sum(x[:,0])/ numberOfAnts), min(x[:,0])])
 
-    
+    ###NOTE: MISSING LEGEND
     plt.plot(out)
     plt.title("Results of " + BPPName + "with " + str(numberOfAnts) + " ants and an evaporation rate of " + str(evaporationRate) + ".\nMinimum fitness found: " + str(minfit) + "")
     plt.show()
 
 def BPP1(evaporationRate):
+    ###BIN NUMBER AND WEIGHT NUMBER FOR PROBLEM
     numberOfWeights = 200
     numberOfBins = 10
  
@@ -58,6 +56,7 @@ def BPP1(evaporationRate):
     return "BPP1", weights, numberOfBins, numberOfWeights
 
 def BPP2(evaporationRate):
+    ###BIN NUMBER AND WEIGHT NUMBER FOR PROBLEM
     numberOfWeights = 200
     numberOfBins = 50
 
@@ -76,7 +75,7 @@ def run(BPP, numberOfAnts, evaporationRate):
     ###SETTING BIN PACKING PROBLEM
     BPPName, weights, numberOfBins, numberOfWeights = BPP(evaporationRate) 
     
-    ###CREATING p NUMBER OF ANTS
+    ###CREATING A NUMBER OF ANTS
     ants = Ant.generateAnts(numberOfAnts, numberOfWeights, numberOfBins)
 
     ###SETTING MINIMUM FITNESS FOUND TO INFINITE
@@ -89,6 +88,7 @@ def run(BPP, numberOfAnts, evaporationRate):
     while True:
 
         genFit, minFit = Ant.generateGeneration(ants,weights,minFit)
+        genFit = numpy.sort(genFit)
 
         fitnesses.append(genFit)
 
@@ -96,14 +96,14 @@ def run(BPP, numberOfAnts, evaporationRate):
 
         Weight.evaporateAll(weights)       
         
-        if minFit == 0:
-            break
+        ###CHECKS WHETHER TERMINATION CONDITION HAS BEEN MET OR NOT
         if fitnessChecks >= 10000:
             break    
     
     return fitnesses
 
 
+###RUNS THE ACO ALGORITHM MULTIPLE TIMES
 def repeatRun(BPP, numberOfAnts, evaporationRate, trials):
     fitnessArr = []
     for i in range(trials):
@@ -113,11 +113,12 @@ def repeatRun(BPP, numberOfAnts, evaporationRate, trials):
 
     return fitnessArr
 
-graphRepeatRun(repeatRun(BPP1, 100, 0.9, 5),100,0.9,"BPP1",5)
-graphRepeatRun(repeatRun(BPP1, 100, 0.3, 5),100,0.3,"BPP1",5)
-graphRepeatRun(repeatRun(BPP1, 10, 0.3, 5),10,0.3,"BPP1",5)
+graphRepeatRun(repeatRun(BPP1, 100, 0.9, 10),100,0.9,"BPP1",10)
+graphRepeatRun(repeatRun(BPP1, 100, 0.4, 10),100,0.4,"BPP1",10)
+graphRepeatRun(repeatRun(BPP1, 10, 0.9, 10),10,0.9,"BPP1",10)
+graphRepeatRun(repeatRun(BPP1, 10, 0.4, 10),10,0.4,"BPP1",10)
 
-graphRepeatRun(repeatRun(BPP2, 100, 0.9, 5),100,0.9,"BPP2",5)
-graphRepeatRun(repeatRun(BPP2, 100, 0.3, 5),100,0.3,"BPP2",5)
-graphRepeatRun(repeatRun(BPP2, 10, 0.9, 5),10,0.9,"BPP2",5)
-graphRepeatRun(repeatRun(BPP2, 10, 0.3, 5),10,0.3,"BPP2",5) 
+graphRepeatRun(repeatRun(BPP2, 100, 0.9, 10),100,0.9,"BPP2",10)
+graphRepeatRun(repeatRun(BPP2, 100, 0.4, 10),100,0.4,"BPP2",10)
+graphRepeatRun(repeatRun(BPP2, 10, 0.9, 10),10,0.9,"BPP2",10)
+graphRepeatRun(repeatRun(BPP2, 10, 0.4, 10),10,0.4,"BPP2",10) 
