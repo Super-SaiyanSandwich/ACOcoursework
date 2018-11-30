@@ -1,6 +1,7 @@
 import random
 import matplotlib.pyplot as plt
 import numpy
+import pandas
 
 import Weight
 import Ant
@@ -69,7 +70,7 @@ def BPP2(evaporationRate):
 
     return "BPP2", weights, numberOfBins, numberOfWeights
     
-
+###MAIN ACO FUNCTION
 def run(BPP, numberOfAnts, evaporationRate):
 
     ###SETTING BIN PACKING PROBLEM
@@ -102,6 +103,35 @@ def run(BPP, numberOfAnts, evaporationRate):
     
     return fitnesses
 
+###MAIN ACO FUNCTION, MINFIT VARIANT
+def minRun(BPP, numberOfAnts, evaporationRate):
+
+    ###SETTING BIN PACKING PROBLEM
+    BPPName, weights, numberOfBins, numberOfWeights = BPP(evaporationRate) 
+    
+    ###CREATING A NUMBER OF ANTS
+    ants = Ant.generateAnts(numberOfAnts, numberOfWeights, numberOfBins)
+
+    ###SETTING MINIMUM FITNESS FOUND TO INFINITE
+    minFit = float("inf")
+    
+    fitnessChecks = 0
+
+    while True:
+
+        genFit, minFit = Ant.generateGeneration(ants,weights,minFit)
+
+        fitnessChecks += Ant.updateAnts(ants, weights)
+
+        Weight.evaporateAll(weights)       
+        
+        ###CHECKS WHETHER TERMINATION CONDITION HAS BEEN MET OR NOT
+        if fitnessChecks >= 10000:
+            break    
+    
+    return minFit
+
+
 
 ###RUNS THE ACO ALGORITHM MULTIPLE TIMES
 def repeatRun(BPP, numberOfAnts, evaporationRate, trials):
@@ -113,6 +143,15 @@ def repeatRun(BPP, numberOfAnts, evaporationRate, trials):
 
     return fitnessArr
 
+###RUNS THE ACO ALGORITHM MULTIPLE TIMES ONLY CARING ABOUT MINIMUM FIT
+def repeatMin(BPP, numberOfAnts, evaporationRate, trials):
+    minFitAv = 0
+    for i in range(trials):
+        minFitAv += minRun(BPP, numberOfAnts, evaporationRate)
+    
+    return minFitAv/trials
+
+""" ### EXPERIMENTS ASKED FOR BY THE COURSEWORK
 graphRepeatRun(repeatRun(BPP1, 100, 0.9, 10),100,0.9,"BPP1",10)
 graphRepeatRun(repeatRun(BPP1, 100, 0.4, 10),100,0.4,"BPP1",10)
 graphRepeatRun(repeatRun(BPP1, 10, 0.9, 10),10,0.9,"BPP1",10)
@@ -121,4 +160,15 @@ graphRepeatRun(repeatRun(BPP1, 10, 0.4, 10),10,0.4,"BPP1",10)
 graphRepeatRun(repeatRun(BPP2, 100, 0.9, 10),100,0.9,"BPP2",10)
 graphRepeatRun(repeatRun(BPP2, 100, 0.4, 10),100,0.4,"BPP2",10)
 graphRepeatRun(repeatRun(BPP2, 10, 0.9, 10),10,0.9,"BPP2",10)
-graphRepeatRun(repeatRun(BPP2, 10, 0.4, 10),10,0.4,"BPP2",10) 
+graphRepeatRun(repeatRun(BPP2, 10, 0.4, 10),10,0.4,"BPP2",10) """
+
+###FOR FURTHER WORK SECTION
+out = numpy.zeros((19,13))
+for i in range(19): 
+    antNum = 10 + (i * 5)
+    for j in range(13):
+        evapRate = 0.3 + (j*0.05)
+        out[i,j] = repeatMin(BPP1, antNum, evapRate, 5)
+antNums = range(10,105,5)
+evapRates = range(0.3,0.9,0.05)
+pandas.DataFrame(out, antNums, evapRates)
