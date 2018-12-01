@@ -141,6 +141,7 @@ def repeatRun(BPP, numberOfAnts, evaporationRate, trials):
     fitnessArr = numpy.array(fitnessArr)
     fitnessArr = numpy.mean(fitnessArr, axis= 0)
 
+    print("Repeat trials of " + str(numberOfAnts) + " " + str(evaporationRate) + " " + str(trials) + "complete")
     return fitnessArr
 
 ###RUNS THE ACO ALGORITHM MULTIPLE TIMES ONLY CARING ABOUT MINIMUM FIT
@@ -151,7 +152,8 @@ def repeatMin(BPP, numberOfAnts, evaporationRate, trials):
     
     return minFitAv/trials
 
-""" ### EXPERIMENTS ASKED FOR BY THE COURSEWORK
+### EXPERIMENTS ASKED FOR BY THE COURSEWORK
+print("Beginning")
 graphRepeatRun(repeatRun(BPP1, 100, 0.9, 10),100,0.9,"BPP1",10)
 graphRepeatRun(repeatRun(BPP1, 100, 0.4, 10),100,0.4,"BPP1",10)
 graphRepeatRun(repeatRun(BPP1, 10, 0.9, 10),10,0.9,"BPP1",10)
@@ -160,15 +162,17 @@ graphRepeatRun(repeatRun(BPP1, 10, 0.4, 10),10,0.4,"BPP1",10)
 graphRepeatRun(repeatRun(BPP2, 100, 0.9, 10),100,0.9,"BPP2",10)
 graphRepeatRun(repeatRun(BPP2, 100, 0.4, 10),100,0.4,"BPP2",10)
 graphRepeatRun(repeatRun(BPP2, 10, 0.9, 10),10,0.9,"BPP2",10)
-graphRepeatRun(repeatRun(BPP2, 10, 0.4, 10),10,0.4,"BPP2",10) """
+graphRepeatRun(repeatRun(BPP2, 10, 0.4, 10),10,0.4,"BPP2",10)
 
-###FOR FURTHER WORK SECTION
-out = numpy.zeros((19,13))
+###FOR FURTHER WORK SECTION: OPTIMAL PAIRINGS
+""" out = numpy.zeros((19,13))
+antNums = list(range(10,105,5))
+evapRates = numpy.array(range(30,91,5)) / 100
 for i in range(19): 
     antNum = 10 + (i * 5)
     for j in range(13):
         evapRate = 0.3 + (j*0.05)
         out[i,j] = repeatMin(BPP1, antNum, evapRate, 5)
-antNums = range(10,105,5)
-evapRates = range(0.3,0.9,0.05)
-pandas.DataFrame(out, antNums, evapRates)
+        print(str(antNums[i]) + " , " + str(evapRates[j]))
+a = pandas.DataFrame(out, antNums, evapRates)
+print(a) """
