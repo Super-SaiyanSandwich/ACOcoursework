@@ -19,7 +19,7 @@ class Bin:
     ###SELECT RANDOM BIN IN NEXT SECTION OF CONSTRUCTION GRAPH
     def chooseRandBin(self, bins, value):
         bins = len(bins) - ss.rankdata(bins) + 1
-        a = numpy.array(self.pheromones) * bins
+        a = numpy.array(self.pheromones) * numpy.sqrt(bins)
         x = sum(a)
         r = random.uniform(0,x)
         s = 0
