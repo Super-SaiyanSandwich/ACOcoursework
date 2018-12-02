@@ -5,6 +5,9 @@ import pandas
 
 import Weight
 import Ant
+
+import WeightH
+import AntH
       
 
 ###GRAPHS OUT A AVERAGE RUN FROM A REPEAT NUMBER OF RUNS
@@ -56,6 +59,21 @@ def BPP1(evaporationRate):
 
     return "BPP1", weights, numberOfBins, numberOfWeights
 
+### ALTERNATE FOR HEURISTIC BASED TESTS
+def BPP1H(evaporationRate):
+    ###BIN NUMBER AND WEIGHT NUMBER FOR PROBLEM
+    numberOfWeights = 200
+    numberOfBins = 10
+ 
+    ###DECLRAING THE WEIGHTS FOR BPP1
+    weights = []    
+
+    for i in range(numberOfWeights):
+        x  = WeightH.Weight(random.randint(1,201),numberOfBins, evaporationRate)
+        weights.append(x)
+
+    return "BPP1", weights, numberOfBins, numberOfWeights
+
 def BPP2(evaporationRate):
     ###BIN NUMBER AND WEIGHT NUMBER FOR PROBLEM
     numberOfWeights = 200
@@ -96,6 +114,39 @@ def run(BPP, numberOfAnts, evaporationRate):
         fitnessChecks += Ant.updateAnts(ants, weights)
 
         Weight.evaporateAll(weights)       
+        
+        ###CHECKS WHETHER TERMINATION CONDITION HAS BEEN MET OR NOT
+        if fitnessChecks >= 10000:
+            break    
+    
+    return fitnesses
+
+###MAIN ACO FUNCTION: ALTERNATE FOR HEURISTIC TESTS
+def runH(BPP, numberOfAnts, evaporationRate):
+
+    ###SETTING BIN PACKING PROBLEM
+    BPPName, weights, numberOfBins, numberOfWeights = BPP(evaporationRate) 
+    
+    ###CREATING A NUMBER OF ANTS
+    ants = AntH.generateAnts(numberOfAnts, numberOfWeights, numberOfBins)
+
+    ###SETTING MINIMUM FITNESS FOUND TO INFINITE
+    minFit = float("inf")
+    
+    ###CREATING LIST FOR ALL FITNESSES (FOR GRAPHING LATER)
+    fitnesses = []
+    fitnessChecks = 0
+
+    while True:
+
+        genFit, minFit = AntH.generateGeneration(ants,weights,minFit)
+        genFit = numpy.sort(genFit)
+
+        fitnesses.append(genFit)
+
+        fitnessChecks += Ant.updateAnts(ants, weights)
+
+        WeightH.evaporateAll(weights)       
         
         ###CHECKS WHETHER TERMINATION CONDITION HAS BEEN MET OR NOT
         if fitnessChecks >= 10000:
@@ -144,6 +195,18 @@ def repeatRun(BPP, numberOfAnts, evaporationRate, trials):
     print("Repeat trials of " + str(numberOfAnts) + " " + str(evaporationRate) + " " + str(trials) + "complete")
     return fitnessArr
 
+###RUNS THE ACO ALGORITHM MULTIPLE TIMES
+def repeatRunH(BPP, numberOfAnts, evaporationRate, trials):
+    fitnessArr = []
+    for i in range(trials):
+        fitnessArr.append(runH(BPP, numberOfAnts, evaporationRate))
+    fitnessArr = numpy.array(fitnessArr)
+    fitnessArr = numpy.mean(fitnessArr, axis= 0)
+
+    print("Repeat trials of " + str(numberOfAnts) + " " + str(evaporationRate) + " " + str(trials) + "complete")
+    return fitnessArr
+
+
 ###RUNS THE ACO ALGORITHM MULTIPLE TIMES ONLY CARING ABOUT MINIMUM FIT
 def repeatMin(BPP, numberOfAnts, evaporationRate, trials):
     minFitAv = 0
@@ -153,7 +216,7 @@ def repeatMin(BPP, numberOfAnts, evaporationRate, trials):
     return minFitAv/trials
 
 ### EXPERIMENTS ASKED FOR BY THE COURSEWORK
-print("Beginning")
+""" print("Beginning")
 graphRepeatRun(repeatRun(BPP1, 100, 0.9, 10),100,0.9,"BPP1",10)
 graphRepeatRun(repeatRun(BPP1, 100, 0.4, 10),100,0.4,"BPP1",10)
 graphRepeatRun(repeatRun(BPP1, 10, 0.9, 10),10,0.9,"BPP1",10)
@@ -162,7 +225,7 @@ graphRepeatRun(repeatRun(BPP1, 10, 0.4, 10),10,0.4,"BPP1",10)
 graphRepeatRun(repeatRun(BPP2, 100, 0.9, 10),100,0.9,"BPP2",10)
 graphRepeatRun(repeatRun(BPP2, 100, 0.4, 10),100,0.4,"BPP2",10)
 graphRepeatRun(repeatRun(BPP2, 10, 0.9, 10),10,0.9,"BPP2",10)
-graphRepeatRun(repeatRun(BPP2, 10, 0.4, 10),10,0.4,"BPP2",10)
+graphRepeatRun(repeatRun(BPP2, 10, 0.4, 10),10,0.4,"BPP2",10) """
 
 ###FOR FURTHER WORK SECTION: OPTIMAL PAIRINGS
 """ out = numpy.zeros((19,13))
@@ -176,3 +239,6 @@ for i in range(19):
         print(str(antNums[i]) + " , " + str(evapRates[j]))
 a = pandas.DataFrame(out, antNums, evapRates)
 print(a) """
+
+###FOR FURTHER WORK SECTION: HEURISTCS
+graphRepeatRun(repeatRunH(BPP1H, 10, 0.9, 10),10,0.9,"BPP1, with Heuristics",10)
